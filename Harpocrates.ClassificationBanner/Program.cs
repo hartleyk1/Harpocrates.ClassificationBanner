@@ -18,5 +18,6 @@ namespace Harpocrates.ClassificationBanner
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frm_ClassificationBanner());
         }
+
     }
 }
