@@ -37,10 +37,10 @@ namespace Harpocrates.ClassificationBanner
             //pictureBox1.Image = Image.FromFile("../Pics/image1.jpg"); 
             // Sets frm_ClassificationBanner to always be on top
             // this.TopMost = true;
+            
+            this.RegisterBar();
             this.ShowDialog();
             // SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
-            this.Closing += new System.ComponentModel.CancelEventHandler(this.OnClosing);
-            this.Load += new System.EventHandler(this.OnLoad);
         }
         [StructLayout(LayoutKind.Sequential)]
         struct RECT
@@ -164,7 +164,7 @@ namespace Harpocrates.ClassificationBanner
                 else
                 {
                     abd.rc.bottom = SystemInformation.PrimaryMonitorSize.Height;
-                    abd.rc.top = abd.rc.bottom - Size.Height + 50;
+                    abd.rc.top = abd.rc.bottom - Size.Height;
                 }
             }
 
@@ -182,7 +182,7 @@ namespace Harpocrates.ClassificationBanner
                     abd.rc.left = abd.rc.right - Size.Width;
                     break;
                 case (int)ABEdge.ABE_TOP:
-                    abd.rc.bottom = abd.rc.top + Size.Height + 50;
+                    abd.rc.bottom = abd.rc.top + Size.Height;
                     break;
                 case (int)ABEdge.ABE_BOTTOM:
                     abd.rc.top = abd.rc.bottom - Size.Height;
