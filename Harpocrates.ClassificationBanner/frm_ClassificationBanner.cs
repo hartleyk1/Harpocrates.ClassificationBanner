@@ -2,8 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Data.SQLite;
-using System.Data.SqlClient;
 
 namespace Harpocrates.ClassificationBanner
 {
@@ -39,11 +37,8 @@ namespace Harpocrates.ClassificationBanner
             //pictureBox1.Image = Image.FromFile("../Pics/image1.jpg"); 
             // Sets frm_ClassificationBanner to always be on top
             // this.TopMost = true;
-            var domainPath = DomainManager.DomainPath;
-            var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
-            Console.WriteLine(Environment.UserName);
-            Console.WriteLine("Domain:" + domainPath);
-            Console.WriteLine("Groups:" + userGroup);
+            
+            this.RegisterBar();
             this.ShowDialog();
             // SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
@@ -229,22 +224,11 @@ namespace Harpocrates.ClassificationBanner
                 return cp;
             }
         }
-
-        /// <summary>
-        /// Load the windows form
-        /// Registers the banner as an application bar
-        /// </summary>
         private void OnLoad(object sender, System.EventArgs e)
         {
             RegisterBar();
         }
 
-        /// <summary>
-        /// Close out of the windows form properly,
-        /// De-registers the banner and restores desktop to its original size
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             RegisterBar();
