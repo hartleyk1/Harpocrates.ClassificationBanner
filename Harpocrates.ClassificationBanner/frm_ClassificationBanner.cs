@@ -2,6 +2,9 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Microsoft.Data.Sqlite;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace Harpocrates.ClassificationBanner
 {
@@ -20,6 +23,20 @@ namespace Harpocrates.ClassificationBanner
          /// Load frm_ClassificationBanner windows form
          /// </summary>
           */
+        private string U = "#007a33";
+        private string U_TEXT = "UNCLASSIFIED";
+        private string ULES = "#007a33";
+        private string ULES_TEXT = "UNCLASSIFIED // LAW ENFORCEMENT SENSITIVE";
+        private string UFUO = "#007a33";
+        private string UFUO_TEXT = "UNCLASSIFIED // FOR OPERATIONAL USE ONLY";
+        private string CON = "#0033A0";
+        private string CON_TEXT = "CONFIDENTIAL";
+        private string C = "#c1a7e2";
+        private string C_TEXT = "CLASSIFIED";
+        private string S = "#C8102E";
+        private string S_TEXT = "SECRET";
+        private string TS = "#FF671F";
+        private string TS_TEXT = "TOP SECRET";
 
         public frm_ClassificationBanner()
         {
@@ -37,11 +54,44 @@ namespace Harpocrates.ClassificationBanner
             //pictureBox1.Image = Image.FromFile("../Pics/image1.jpg"); 
             // Sets frm_ClassificationBanner to always be on top
             // this.TopMost = true;
-            
+            var domainPath = DomainManager.DomainPath;
+            var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
+            Console.WriteLine(Environment.UserName);
+            Console.WriteLine("Domain:" + domainPath);
+            Console.WriteLine("Groups:" + userGroup.Path);
+            ClassifyUser(userGroup.Path, domainPath);
             this.RegisterBar();
             this.ShowDialog();
             // SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
+
+        private void ClassifyUser(string userGroup, string domainPath)
+        {
+            // Give ULES
+            if(string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
+            {
+                lbl_Classification.Text = U_TEXT;
+                Int32 iColorInt = Convert.ToInt32(U.Substring(1), 16);
+                lbl_Classification.BackColor = Color.FromArgb(iColorInt);
+            } else
+            {
+                lbl_Classification.Text = ULES_TEXT;
+                Int32 iColorInt = Convert.ToInt32(ULES.Substring(1), 16);
+                lbl_Classification.BackColor = Color.FromArgb(iColorInt);
+            }
+
+            try
+            {
+                var ConString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                SqlConnection con = new SqlConnection(ConString);
+                con.Open();
+                con.Close();
+            }catch (Exception e)
+            {
+                Console.WriteLine("Error:"+e);
+            }
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         struct RECT
         {
