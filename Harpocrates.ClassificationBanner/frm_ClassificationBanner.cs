@@ -1,28 +1,26 @@
-﻿using System;
+﻿/***********************************************************************************
+ * 
+ * Copyright:   Kellye Tolliver, tolliver.kellye@gmail.com
+ * File Name:   frm_ClassificationBanner
+ * Modified:    2020-01-20
+ * Purpose:     Set up defaults of the banner settings and then begin the loading
+ *      and registration of the banner. Banner must be registered as an application
+ *      bar for it to be able to take over the top portion of the user's screen.
+ *      Next, retrieve the user's current information and, based on the returned
+ *      data, modify the banner.
+ * 
+ * *********************************************************************************/
+
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using Microsoft.Data.Sqlite;
-using System.Configuration;
-using System.Data.SqlClient;
 
 namespace Harpocrates.ClassificationBanner
 {
     public partial class frm_ClassificationBanner : Form
     {
-        // variables for class declaration
-        /* private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-         private const UInt32 SWP_NOSIZE = 0x0001;
-         private const UInt32 SWP_NOMOVE = 0x0002;
-         private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;*/
-        // Add prototype for user32.ddl function
-        /* [DllImport("user32.dll")]
-         [return: MarshalAs(UnmanagedType.Bool)]
-         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-         /// <summary>
-         /// Load frm_ClassificationBanner windows form
-         /// </summary>
-          */
+        #region Constant Banner Variables
         private string U = "#007a33";
         private string U_TEXT = "UNCLASSIFIED";
         private string ULES = "#007a33";
@@ -37,7 +35,13 @@ namespace Harpocrates.ClassificationBanner
         private string S_TEXT = "SECRET";
         private string TS = "#FF671F";
         private string TS_TEXT = "TOP SECRET";
+        #endregion
 
+        #region Initialize Banner
+        /// <summary>
+        /// Initializes the consturction of the form/banner,
+        /// retrieves the user's current information, and executes registration of the banner
+        /// </summary>
         public frm_ClassificationBanner()
         {
             InitializeComponent();
@@ -51,9 +55,6 @@ namespace Harpocrates.ClassificationBanner
             lbl_User.Text = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             /** Computer Label **/
             lbl_Computer.Text = Environment.MachineName;
-            //pictureBox1.Image = Image.FromFile("../Pics/image1.jpg"); 
-            // Sets frm_ClassificationBanner to always be on top
-            // this.TopMost = true;
             var domainPath = DomainManager.DomainPath;
             var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
             Console.WriteLine(Environment.UserName);
@@ -64,22 +65,31 @@ namespace Harpocrates.ClassificationBanner
             this.ShowDialog();
             // SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
+        #endregion
 
+        #region Set Up Default Banner
+        /// <summary>
+        /// Based on the user's information, modify the banner based on their
+        /// level/user group.
+        /// </summary>
+        /// <param name="userGroup">Obtain the group that the user belongs to within their directory</param>
+        /// <param name="domainPath">Obtain the network domain that the user is a part of</param>
         private void ClassifyUser(string userGroup, string domainPath)
         {
-            // Give ULES
+            // Give UNCLASSIFIED if a group or domain does not exist
             if(string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
             {
-                lbl_Classification.Text = U_TEXT;
-                Int32 iColorInt = Convert.ToInt32(U.Substring(1), 16);
-                lbl_Classification.BackColor = Color.FromArgb(iColorInt);
+                lbl_Classification.Text = U_TEXT;                           // Sets default clearance text
+                Int32 iColorInt = Convert.ToInt32(U.Substring(1), 16);      // Converts HEX clearance color to an integer
+                lbl_Classification.BackColor = Color.FromArgb(iColorInt);   // Sets default clearance color
             } else
             {
+                // Give UNCLASSIFIEDLES if nothing else applies
                 lbl_Classification.Text = ULES_TEXT;
                 Int32 iColorInt = Convert.ToInt32(ULES.Substring(1), 16);
                 lbl_Classification.BackColor = Color.FromArgb(iColorInt);
             }
-
+            /*
             try
             {
                 var ConString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -89,9 +99,11 @@ namespace Harpocrates.ClassificationBanner
             }catch (Exception e)
             {
                 Console.WriteLine("Error:"+e);
-            }
+            }*/
         }
+        #endregion
 
+        #region Banner Structures
         [StructLayout(LayoutKind.Sequential)]
         struct RECT
         {
@@ -111,7 +123,9 @@ namespace Harpocrates.ClassificationBanner
             public RECT rc;
             public IntPtr lParam;
         }
+        #endregion
 
+        #region Banner Enumerators
         enum ABMsg : int
         {
             ABM_NEW = 0,
@@ -142,9 +156,10 @@ namespace Harpocrates.ClassificationBanner
             ABE_RIGHT,
             ABE_BOTTOM
         }
+        #endregion
 
+        #region Banner Registration Variables
         private bool fBarRegistered = false;
-
         [DllImport("SHELL32", CallingConvention = CallingConvention.StdCall)]
         static extern uint SHAppBarMessage(int dwMessage, ref APPBARDATA pData);
         [DllImport("USER32")]
@@ -156,7 +171,14 @@ namespace Harpocrates.ClassificationBanner
         [DllImport("User32.dll", CharSet = CharSet.Auto)]
         private static extern int RegisterWindowMessage(string msg);
         private int uCallBack;
+        #endregion
 
+        #region Register Banner as WinApplication
+        /// <summary>
+        /// Register the Banner form as an application bar.
+        /// Sets up the banner to mimic a start bar,
+        /// moves user's accessible window content down to prevent banner from being covered.
+        /// </summary>
         private void RegisterBar()
         {
             APPBARDATA abd = new APPBARDATA();
@@ -179,6 +201,10 @@ namespace Harpocrates.ClassificationBanner
             }
         }
 
+        /// <summary>
+        /// Set the position of the registered application banner.
+        /// Moves window content beneath banner to prevent banner from covering content.
+        /// </summary>
         private void ABSetPos()
         {
             APPBARDATA abd = new APPBARDATA();
@@ -248,6 +274,9 @@ namespace Harpocrates.ClassificationBanner
                 abd.rc.right - abd.rc.left, abd.rc.bottom - abd.rc.top, true);
         }
 
+        /// <summary>
+        /// Registers the banenr to windows processes
+        /// </summary>
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
             if (m.Msg == uCallBack)
@@ -259,10 +288,12 @@ namespace Harpocrates.ClassificationBanner
                         break;
                 }
             }
-
             base.WndProc(ref m);
         }
 
+        /// <summary>
+        /// Determines the banner's border styling
+        /// </summary>
         protected override System.Windows.Forms.CreateParams CreateParams
         {
             get
@@ -274,15 +305,25 @@ namespace Harpocrates.ClassificationBanner
                 return cp;
             }
         }
+        #endregion
+
+        #region On Events
+        /// <summary>
+        /// On load, the banner executes RegisterBar
+        /// </summary>
         private void OnLoad(object sender, System.EventArgs e)
         {
             RegisterBar();
         }
 
+        /// <summary>
+        /// On close, de-register the banner
+        /// </summary>
         private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             RegisterBar();
         }
+        #endregion
 
     }
 }
