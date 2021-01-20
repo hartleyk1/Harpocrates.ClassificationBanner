@@ -15,6 +15,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Harpocrates.ClassificationBanner
 {
@@ -55,13 +56,12 @@ namespace Harpocrates.ClassificationBanner
             lbl_User.Text = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             /** Computer Label **/
             lbl_Computer.Text = Environment.MachineName;
-            var domainPath = DomainManager.DomainPath;
-            var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
-            Console.WriteLine(Environment.UserName);
-            Console.WriteLine("Domain:" + domainPath);
-            Console.WriteLine("Groups:" + userGroup.Path);
-            ClassifyUser(userGroup.Path, domainPath);
-            this.RegisterBar();
+
+            // this.RegisterBar();
+            if (Application.OpenForms.OfType<frm_HideClassificationBanner>().Any())
+            {
+                Application.OpenForms.OfType<frm_HideClassificationBanner>().First().Close();
+            }
             this.ShowDialog();
             // SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
@@ -314,16 +314,40 @@ namespace Harpocrates.ClassificationBanner
         private void OnLoad(object sender, System.EventArgs e)
         {
             RegisterBar();
+            var domainPath = DomainManager.DomainPath;
+            var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
+            Console.WriteLine(Environment.UserName);
+            Console.WriteLine("Domain:" + domainPath);
+            Console.WriteLine("Groups:" + userGroup.Path);
+            ClassifyUser(userGroup.Path, domainPath);
+        }
+
+        #region Form Closing
+        /// <summary>
+        /// User is wanting to close the banner
+        /// </summary>
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();   // Triggers form closing
         }
 
         /// <summary>
-        /// On close, de-register the banner
+        /// On close, de-register the banner by properly closing out of it
         /// </summary>
-        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void frm_ClassificationBanner_FormClosing(object sender, FormClosingEventArgs e)
         {
-            RegisterBar();
+            RegisterBar();      // De-registers the application bar
+            this.Hide();
+            //Application.Exit(); // Forces program to exit
         }
         #endregion
 
+        #endregion
+
+        private void btnHide_Click(object sender, EventArgs e)
+        {
+            frm_HideClassificationBanner hideBanner = new frm_HideClassificationBanner();
+            hideBanner.Show();
+        }
     }
 }
