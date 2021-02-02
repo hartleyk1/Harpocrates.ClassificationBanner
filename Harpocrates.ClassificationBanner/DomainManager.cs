@@ -1,14 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿/***********************************************************************************
+ * 
+ * Copyright:   Kellye Tolliver, tolliver.kellye@gmail.com
+ * File Name:   DomainManager
+ * Modified:    2020-01-20
+ * Purpose:     Retrieve the user's current domain information.
+ * 
+ * *********************************************************************************/
+
+using System;
 using System.Text;
-using System.Threading.Tasks;
 using System.DirectoryServices.ActiveDirectory;
 
 namespace Harpocrates.ClassificationBanner
 {
     public static class DomainManager
     {
+        /// <summary>
+        /// Retrieve and set the domain controller information for the user.
+        /// </summary>
         static DomainManager()
         {
             Domain domain = null;
@@ -29,13 +38,10 @@ namespace Harpocrates.ClassificationBanner
                     domainController.Dispose();
             }
         }
-
+        #region Domain Variables
         public static string DomainControllerName { get; private set; }
-
         public static string ComputerName { get; private set; }
-
         public static string DomainName { get; private set; }
-
         public static string DomainPath
         {
             get
@@ -58,7 +64,6 @@ namespace Harpocrates.ClassificationBanner
                 return sbReturn.ToString();
             }
         }
-
         public static string RootPath
         {
             get
@@ -66,5 +71,6 @@ namespace Harpocrates.ClassificationBanner
                 return string.Format("LDAP://{0}/{1}", DomainName, DomainPath);
             }
         }
+        #endregion
     }
 }

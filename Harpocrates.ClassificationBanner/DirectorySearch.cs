@@ -1,15 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/***********************************************************************************
+ * 
+ * Copyright:   Kellye Tolliver, tolliver.kellye@gmail.com
+ * File Name:   DirectorySearch
+ * Modified:    2020-01-20
+ * Purpose:     Search for information pertaining to the user or role of an existing
+ *      LDAP via the user's name or group. Retrieves the current logged in user's
+ *      information. If data within the LDAP is not discovered, always return null.
+ * 
+ * *********************************************************************************/
+
+using System;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Harpocrates.ClassificationBanner
 {
     class DirectorySearch
     {
+        /// <summary>
+        /// Search for the user's literal name and group within their current domain.
+        /// If one is not provided, return null. If a connection or search fails,
+        /// dispose of variables and safely end the search.
+        /// </summary>
+        /// <param name="userName_">Obtain the current logged in user's username</param>
+        /// <returns>Return the results of the active directory search back to the user</returns>
         public static DirectoryEntry SearchForUser(string userName_)
         {
             DirectoryEntry de = null;
