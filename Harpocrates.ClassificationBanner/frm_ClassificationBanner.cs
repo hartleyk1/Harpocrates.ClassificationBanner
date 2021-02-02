@@ -37,7 +37,8 @@ namespace Harpocrates.ClassificationBanner
         private string TS = "#FF671F";
         private string TS_TEXT = "TOP SECRET";
         private int closingFlag = 0;
-        private int hidingFlag = 0; 
+        private int hidingFlag = 0;
+        private int bannerCount = 0;
         #endregion
 
         #region Initialize Banner
@@ -62,6 +63,8 @@ namespace Harpocrates.ClassificationBanner
             // Banner Controls
             btnClose.Image = Image.FromFile(@"../../Images/close.png");
             btnHide.Image = Image.FromFile(@"../../Images/visible.png");
+            btnChange.Image = Image.FromFile(@"../../Images/level.png");
+            btnAbout.Image = Image.FromFile(@"../../Images/help.png");
         }
         #endregion
 
@@ -72,32 +75,113 @@ namespace Harpocrates.ClassificationBanner
         /// </summary>
         /// <param name="userGroup">Obtain the group that the user belongs to within their directory</param>
         /// <param name="domainPath">Obtain the network domain that the user is a part of</param>
-        private void ClassifyUser(string userGroup, string domainPath)
+        private void ClassifyUser(string userGroup, string domainPath, int level)
         {
-            // Give UNCLASSIFIED if a group or domain does not exist
-            if(string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
+            if (level > 0 && level < 7)
             {
-                lbl_Classification.Text = U_TEXT;                           // Sets default clearance text
-                Int32 iColorInt = Convert.ToInt32(U.Substring(1), 16);      // Converts HEX clearance color to an integer
-                lbl_Classification.BackColor = Color.FromArgb(iColorInt);   // Sets default clearance color
-            } else
-            {
-                // Give UNCLASSIFIEDLES if nothing else applies
-                lbl_Classification.Text = ULES_TEXT;
-                Int32 iColorInt = Convert.ToInt32(ULES.Substring(1), 16);
-                lbl_Classification.BackColor = Color.FromArgb(iColorInt);
+                switch (level)
+                {
+                    case 1:
+                        lbl_Classification.Text = ULES_TEXT;
+                        lbl_Classification.BackColor = ColorTranslator.FromHtml(ULES);
+                        btnClose.BackColor = ColorTranslator.FromHtml(ULES);
+                        btnHide.BackColor = ColorTranslator.FromHtml(ULES);
+                        btnChange.BackColor = ColorTranslator.FromHtml(ULES);
+                        btnAbout.BackColor = ColorTranslator.FromHtml(ULES);
+                        lbl_Computer.BackColor = ColorTranslator.FromHtml(ULES);
+                        lbl_User.BackColor = ColorTranslator.FromHtml(ULES);
+                        break;
+                    case 2:
+                        lbl_Classification.Text = UFUO_TEXT;
+                        lbl_Classification.BackColor = ColorTranslator.FromHtml(UFUO);
+                        btnClose.BackColor = ColorTranslator.FromHtml(UFUO);
+                        btnHide.BackColor = ColorTranslator.FromHtml(UFUO);
+                        btnChange.BackColor = ColorTranslator.FromHtml(UFUO);
+                        btnAbout.BackColor = ColorTranslator.FromHtml(UFUO);
+                        lbl_Computer.BackColor = ColorTranslator.FromHtml(UFUO);
+                        lbl_User.BackColor = ColorTranslator.FromHtml(UFUO);
+                        break;
+                    case 3:
+                        lbl_Classification.Text = CON_TEXT;
+                        lbl_Classification.BackColor = ColorTranslator.FromHtml(CON);
+                        btnClose.BackColor = ColorTranslator.FromHtml(CON);
+                        btnHide.BackColor = ColorTranslator.FromHtml(CON);
+                        btnChange.BackColor = ColorTranslator.FromHtml(CON);
+                        btnAbout.BackColor = ColorTranslator.FromHtml(CON);
+                        lbl_Computer.BackColor = ColorTranslator.FromHtml(CON);
+                        lbl_User.BackColor = ColorTranslator.FromHtml(CON);
+                        break;
+                    case 4:
+                        lbl_Classification.Text = C_TEXT;
+                        lbl_Classification.BackColor = ColorTranslator.FromHtml(C);
+                        btnClose.BackColor = ColorTranslator.FromHtml(C);
+                        btnHide.BackColor = ColorTranslator.FromHtml(C);
+                        btnChange.BackColor = ColorTranslator.FromHtml(C);
+                        btnAbout.BackColor = ColorTranslator.FromHtml(C);
+                        lbl_Computer.BackColor = ColorTranslator.FromHtml(C);
+                        lbl_User.BackColor = ColorTranslator.FromHtml(C);
+                        break;
+                    case 5:
+                        lbl_Classification.Text = S_TEXT;
+                        lbl_Classification.BackColor = ColorTranslator.FromHtml(S);
+                        btnClose.BackColor = ColorTranslator.FromHtml(S);
+                        btnHide.BackColor = ColorTranslator.FromHtml(S);
+                        btnChange.BackColor = ColorTranslator.FromHtml(S);
+                        btnAbout.BackColor = ColorTranslator.FromHtml(S);
+                        lbl_Computer.BackColor = ColorTranslator.FromHtml(S);
+                        lbl_User.BackColor = ColorTranslator.FromHtml(S);
+                        break;
+                    case 6:
+                        lbl_Classification.Text = TS_TEXT;
+                        lbl_Classification.BackColor = ColorTranslator.FromHtml(TS);
+                        btnClose.BackColor = ColorTranslator.FromHtml(TS);
+                        btnHide.BackColor = ColorTranslator.FromHtml(TS);
+                        btnChange.BackColor = ColorTranslator.FromHtml(TS);
+                        btnAbout.BackColor = ColorTranslator.FromHtml(TS);
+                        lbl_Computer.BackColor = ColorTranslator.FromHtml(TS);
+                        lbl_User.BackColor = ColorTranslator.FromHtml(TS);
+                        break;
+                }
             }
-            /*
-            try
+            else
             {
-                var ConString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                SqlConnection con = new SqlConnection(ConString);
-                con.Open();
-                con.Close();
-            }catch (Exception e)
-            {
-                Console.WriteLine("Error:"+e);
-            }*/
+                bannerCount = 0;
+                // Give UNCLASSIFIED if a group or domain does not exist
+                if (string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
+                {
+                    lbl_Classification.Text = U_TEXT;                           // Sets default clearance text
+                    lbl_Classification.BackColor = ColorTranslator.FromHtml(U);
+                    btnClose.BackColor = ColorTranslator.FromHtml(U);
+                    btnHide.BackColor = ColorTranslator.FromHtml(U);
+                    btnChange.BackColor = ColorTranslator.FromHtml(U);
+                    btnAbout.BackColor = ColorTranslator.FromHtml(U);
+                    lbl_Computer.BackColor = ColorTranslator.FromHtml(U);
+                    lbl_User.BackColor = ColorTranslator.FromHtml(U);
+                }
+                else if (userGroup.Contains("OU=IT") || userGroup.Contains("OU=HR") || userGroup.Contains("OU=Secretary") || userGroup.Contains("OU=Administrator"))
+                {
+                    lbl_Classification.Text = C_TEXT;
+                    lbl_Classification.BackColor = ColorTranslator.FromHtml(C);
+                    btnClose.BackColor = ColorTranslator.FromHtml(C);
+                    btnHide.BackColor = ColorTranslator.FromHtml(C);
+                    btnChange.BackColor = ColorTranslator.FromHtml(C);
+                    btnAbout.BackColor = ColorTranslator.FromHtml(C);
+                    lbl_Computer.BackColor = ColorTranslator.FromHtml(C);
+                    lbl_User.BackColor = ColorTranslator.FromHtml(C);
+                }
+                else
+                {
+                    // Give UNCLASSIFIEDLES if nothing else applies
+                    lbl_Classification.Text = ULES_TEXT;
+                    lbl_Classification.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnClose.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnHide.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnChange.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnAbout.BackColor = ColorTranslator.FromHtml(ULES);
+                    lbl_Computer.BackColor = ColorTranslator.FromHtml(ULES);
+                    lbl_User.BackColor = ColorTranslator.FromHtml(ULES);
+                }
+            }
         }
         #endregion
 
@@ -317,7 +401,7 @@ namespace Harpocrates.ClassificationBanner
             Console.WriteLine(Environment.UserName);
             Console.WriteLine("Domain:" + domainPath);
             Console.WriteLine("Groups:" + userGroup.Path);
-            ClassifyUser(userGroup.Path, domainPath);
+            ClassifyUser(userGroup.Path, domainPath, bannerCount);
         }
 
         #region Form Closing
@@ -370,5 +454,26 @@ namespace Harpocrates.ClassificationBanner
             frm_HideClassificationBanner hideBanner = new frm_HideClassificationBanner();
         }
         #endregion
+
+        private void btnChange_Click(object sender, EventArgs e)
+        {
+            var domainPath = DomainManager.DomainPath;
+            var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
+            Console.WriteLine(Environment.UserName);
+            Console.WriteLine("Domain:" + domainPath);
+            Console.WriteLine("Groups:" + userGroup.Path);
+            bannerCount = bannerCount + 1;
+            ClassifyUser(userGroup.Path, domainPath, bannerCount);
+        }
+
+        private void btnAbout_Click(object sender, EventArgs e)
+        {
+            if (Application.OpenForms.OfType<About>().Any())
+            {
+                Application.OpenForms.OfType<About>().First().Close();
+            }
+            About about = new About();
+            about.Show();
+        }
     }
 }
