@@ -37,6 +37,8 @@ namespace Harpocrates.ClassificationBanner
             this.lbl_Computer = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnHide = new System.Windows.Forms.Button();
+            this.btnChange = new System.Windows.Forms.Button();
+            this.btnAbout = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lbl_User
@@ -44,7 +46,7 @@ namespace Harpocrates.ClassificationBanner
             this.lbl_User.AutoSize = true;
             this.lbl_User.Dock = System.Windows.Forms.DockStyle.Left;
             this.lbl_User.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F);
-            this.lbl_User.ForeColor = System.Drawing.Color.DarkGray;
+            this.lbl_User.ForeColor = System.Drawing.Color.Black;
             this.lbl_User.Location = new System.Drawing.Point(0, 0);
             this.lbl_User.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbl_User.Name = "lbl_User";
@@ -73,7 +75,7 @@ namespace Harpocrates.ClassificationBanner
             this.lbl_Computer.AutoSize = true;
             this.lbl_Computer.Dock = System.Windows.Forms.DockStyle.Right;
             this.lbl_Computer.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F);
-            this.lbl_Computer.ForeColor = System.Drawing.Color.DarkGray;
+            this.lbl_Computer.ForeColor = System.Drawing.Color.Black;
             this.lbl_Computer.Location = new System.Drawing.Point(1231, 0);
             this.lbl_Computer.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbl_Computer.Name = "lbl_Computer";
@@ -112,12 +114,44 @@ namespace Harpocrates.ClassificationBanner
             this.btnHide.UseVisualStyleBackColor = false;
             this.btnHide.Click += new System.EventHandler(this.btnHide_Click);
             // 
+            // btnChange
+            // 
+            this.btnChange.BackColor = System.Drawing.Color.Transparent;
+            this.btnChange.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnChange.FlatAppearance.BorderSize = 0;
+            this.btnChange.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnChange.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnChange.ForeColor = System.Drawing.Color.Transparent;
+            this.btnChange.Location = new System.Drawing.Point(1156, 0);
+            this.btnChange.Name = "btnChange";
+            this.btnChange.Size = new System.Drawing.Size(25, 15);
+            this.btnChange.TabIndex = 5;
+            this.btnChange.UseVisualStyleBackColor = false;
+            this.btnChange.Click += new System.EventHandler(this.btnChange_Click);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.BackColor = System.Drawing.Color.Transparent;
+            this.btnAbout.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnAbout.FlatAppearance.BorderSize = 0;
+            this.btnAbout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAbout.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAbout.ForeColor = System.Drawing.Color.Transparent;
+            this.btnAbout.Location = new System.Drawing.Point(1131, 0);
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(25, 15);
+            this.btnAbout.TabIndex = 6;
+            this.btnAbout.UseVisualStyleBackColor = false;
+            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
+            // 
             // frm_ClassificationBanner
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(1290, 15);
             this.ControlBox = false;
+            this.Controls.Add(this.btnAbout);
+            this.Controls.Add(this.btnChange);
             this.Controls.Add(this.btnHide);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.lbl_Computer);
@@ -145,6 +179,8 @@ namespace Harpocrates.ClassificationBanner
         private System.Windows.Forms.Label lbl_Computer;
         private Button btnClose;
         private Button btnHide;
+        private Button btnChange;
+        private Button btnAbout;
     }
 }
 
