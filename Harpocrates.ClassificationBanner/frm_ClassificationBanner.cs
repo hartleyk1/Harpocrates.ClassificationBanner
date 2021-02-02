@@ -2,7 +2,7 @@
  * 
  * Copyright:   Kellye Tolliver, tolliver.kellye@gmail.com
  * File Name:   frm_ClassificationBanner
- * Modified:    2020-01-20
+ * Modified:    2021-02-02
  * Purpose:     Set up defaults of the banner settings and then begin the loading
  *      and registration of the banner. Banner must be registered as an application
  *      bar for it to be able to take over the top portion of the user's screen.
@@ -36,6 +36,8 @@ namespace Harpocrates.ClassificationBanner
         private string S_TEXT = "SECRET";
         private string TS = "#FF671F";
         private string TS_TEXT = "TOP SECRET";
+        private int closingFlag = 0;
+        private int hidingFlag = 0; 
         #endregion
 
         #region Initialize Banner
@@ -57,13 +59,9 @@ namespace Harpocrates.ClassificationBanner
             /** Computer Label **/
             lbl_Computer.Text = Environment.MachineName;
 
-            // this.RegisterBar();
-            if (Application.OpenForms.OfType<frm_HideClassificationBanner>().Any())
-            {
-                Application.OpenForms.OfType<frm_HideClassificationBanner>().First().Close();
-            }
-            this.ShowDialog();
-            // SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+            // Banner Controls
+            btnClose.Image = Image.FromFile(@"../../Images/close.png");
+            btnHide.Image = Image.FromFile(@"../../Images/visible.png");
         }
         #endregion
 
@@ -328,6 +326,8 @@ namespace Harpocrates.ClassificationBanner
         /// </summary>
         private void btnClose_Click(object sender, EventArgs e)
         {
+            Console.WriteLine("Triggered close CLICK");
+            closingFlag = 1;
             this.Close();   // Triggers form closing
         }
 
@@ -336,18 +336,39 @@ namespace Harpocrates.ClassificationBanner
         /// </summary>
         private void frm_ClassificationBanner_FormClosing(object sender, FormClosingEventArgs e)
         {
-            RegisterBar();      // De-registers the application bar
-            this.Hide();
-            //Application.Exit(); // Forces program to exit
+            Console.WriteLine("Triggered close EVENT");
+            //this.Hide();
+            // If user is not hiding banner and making use of hide form...
+            if (closingFlag == 1)
+            {
+                closingFlag = 1;
+                Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
+                RegisterBar();      // De-registers the application bar
+                Application.Exit(); // Forces program to exit with code 0, does not create dispose error
+            } else
+            {
+                hidingFlag = 1;
+                Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
+                RegisterBar();      // De-registers the application bar
+            }
         }
         #endregion
-
         #endregion
 
+        #region Hiding the Banner
+        /// <summary>
+        /// Button to control the banner's display features.
+        /// When clicked, loads the hide banner and shows its message dialog.
+        /// </summary>
         private void btnHide_Click(object sender, EventArgs e)
         {
+            hidingFlag = 1;
+            closingFlag = 0;
+            Console.WriteLine("Triggered Hide");
+            this.Visible = false;
+            RegisterBar();
             frm_HideClassificationBanner hideBanner = new frm_HideClassificationBanner();
-            hideBanner.Show();
         }
+        #endregion
     }
 }

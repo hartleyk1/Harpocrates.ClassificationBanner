@@ -93,10 +93,19 @@
     <Compile Include="frm_ClassificationBanner.Designer.cs">
       <DependentUpon>frm_ClassificationBanner.cs</DependentUpon>
     </Compile>
+    <Compile Include="frm_HideClassificationBanner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_HideClassificationBanner.Designer.cs">
+      <DependentUpon>frm_HideClassificationBanner.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frm_ClassificationBanner.resx">
       <DependentUpon>frm_ClassificationBanner.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_HideClassificationBanner.resx">
+      <DependentUpon>frm_HideClassificationBanner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -124,7 +133,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\close.png" />
     <Content Include="Images\logoTemplate.png" />
+    <Content Include="Images\visible.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

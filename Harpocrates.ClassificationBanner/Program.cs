@@ -1,7 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿/***********************************************************************************
+ * 
+ * Copyright:   Kellye Tolliver, tolliver.kellye@gmail.com
+ * File Name:   Program
+ * Modified:    2020-01-20
+ * Purpose:     Initial start up/load of the windows banner.
+ * 
+ * *********************************************************************************/
+
+
+using System;
 using System.Windows.Forms;
 
 namespace Harpocrates.ClassificationBanner
