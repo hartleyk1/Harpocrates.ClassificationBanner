@@ -16,6 +16,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Linq;
+using Microsoft.Win32;
 
 namespace Harpocrates.ClassificationBanner
 {
@@ -38,6 +39,7 @@ namespace Harpocrates.ClassificationBanner
         private string TS_TEXT = "TOP SECRET";
         private int closingFlag = 0;
         private int hidingFlag = 0;
+        private string userRole;
         private int bannerCount = 0;
         #endregion
 
@@ -65,6 +67,8 @@ namespace Harpocrates.ClassificationBanner
             btnHide.Image = Image.FromFile(@"../../Images/visible.png");
             btnChange.Image = Image.FromFile(@"../../Images/level.png");
             btnAbout.Image = Image.FromFile(@"../../Images/help.png");
+
+            
         }
         #endregion
 
@@ -149,6 +153,7 @@ namespace Harpocrates.ClassificationBanner
                 // Give UNCLASSIFIED if a group or domain does not exist
                 if (string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
                 {
+                    userRole = "UNKNOWN";
                     lbl_Classification.Text = U_TEXT;                           // Sets default clearance text
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(U);
                     btnClose.BackColor = ColorTranslator.FromHtml(U);
@@ -160,6 +165,7 @@ namespace Harpocrates.ClassificationBanner
                 }
                 else if (userGroup.Contains("OU=IT") || userGroup.Contains("OU=HR") || userGroup.Contains("OU=Secretary") || userGroup.Contains("OU=Administrator"))
                 {
+                    userRole = "Administrator";
                     lbl_Classification.Text = C_TEXT;
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(C);
                     btnClose.BackColor = ColorTranslator.FromHtml(C);
@@ -171,6 +177,7 @@ namespace Harpocrates.ClassificationBanner
                 }
                 else
                 {
+                    userRole = "TEST";
                     // Give UNCLASSIFIEDLES if nothing else applies
                     lbl_Classification.Text = ULES_TEXT;
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(ULES);
@@ -182,6 +189,12 @@ namespace Harpocrates.ClassificationBanner
                     lbl_User.BackColor = ColorTranslator.FromHtml(ULES);
                 }
             }
+            // Load registry and store values
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\HSCB");
+            string encString = Harpocrates.Encrypt("HARPOCRATES", "PASSWORD");
+            key.SetValue("Role", userRole);
+            key.SetValue("Password", encString);
+            key.Close();
         }
         #endregion
 
@@ -398,9 +411,6 @@ namespace Harpocrates.ClassificationBanner
             RegisterBar();
             var domainPath = DomainManager.DomainPath;
             var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
-            Console.WriteLine(Environment.UserName);
-            Console.WriteLine("Domain:" + domainPath);
-            Console.WriteLine("Groups:" + userGroup.Path);
             ClassifyUser(userGroup.Path, domainPath, bannerCount);
         }
 
@@ -410,31 +420,76 @@ namespace Harpocrates.ClassificationBanner
         /// </summary>
         private void btnClose_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Triggered close CLICK");
             closingFlag = 1;
             this.Close();   // Triggers form closing
         }
 
         /// <summary>
         /// On close, de-register the banner by properly closing out of it
+        /// if and only if the closingFlag has been set and the user has a proper role and password.
+        /// Else, trigger a hide.
         /// </summary>
         private void frm_ClassificationBanner_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Console.WriteLine("Triggered close EVENT");
-            //this.Hide();
             // If user is not hiding banner and making use of hide form...
             if (closingFlag == 1)
             {
-                closingFlag = 1;
-                Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
-                RegisterBar();      // De-registers the application bar
-                Application.Exit(); // Forces program to exit with code 0, does not create dispose error
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\HSCB");
+                if (key != null)
+                {
+                    // Display a dialog and request password to close out of Harpocrates
+                    string promptValue = ShowPromptDialog("Password required to close Harpocrates.Banner.", "Exiting Harpocrates.Banner");
+                    // Catch null to prevent Decryption from erroring out
+                    if (string.IsNullOrEmpty(promptValue))
+                    {
+                        promptValue = "000000000000000000000000000000000000000000000";
+                    }
+                    string decString = Harpocrates.Decrypt(key.GetValue("Password").ToString(), promptValue);
+                    // If the password and role is a match, close out of Harpocrates
+                    if(decString == "HARPOCRATES" && key.GetValue("Role").ToString() == "Administrator")
+                    {
+                        key.Close();
+                        Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
+                        RegisterBar();      // De-registers the application bar
+                        closingFlag = 0;
+                        Application.Exit(); // Forces program to exit with code 0, does not create dispose error
+                    } else
+                    {
+                        hidingFlag = 1;
+                        key.Close();
+                    }
+                }
             } else
             {
-                hidingFlag = 1;
+                if(hidingFlag == 1)
+                {
+                    btnHide.PerformClick();
+                }
                 Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
                 RegisterBar();      // De-registers the application bar
             }
+        }
+
+        private static string ShowPromptDialog(string text, string caption)
+        {
+            Form prompt = new Form()
+            {
+                Width = 500,
+                Height = 150,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = caption,
+                StartPosition = FormStartPosition.CenterScreen
+            };
+            Label textLabel = new Label() { Left = 50, Top = 20, Width=400, Text = text };
+            TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
+            Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(textBox);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(textLabel);
+            prompt.AcceptButton = confirmation;
+
+            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
         #endregion
         #endregion
@@ -446,9 +501,8 @@ namespace Harpocrates.ClassificationBanner
         /// </summary>
         private void btnHide_Click(object sender, EventArgs e)
         {
-            hidingFlag = 1;
+            hidingFlag = 0;
             closingFlag = 0;
-            Console.WriteLine("Triggered Hide");
             this.Visible = false;
             RegisterBar();
             frm_HideClassificationBanner hideBanner = new frm_HideClassificationBanner();
@@ -459,9 +513,6 @@ namespace Harpocrates.ClassificationBanner
         {
             var domainPath = DomainManager.DomainPath;
             var userGroup = DirectorySearch.SearchForUser(Environment.UserName);
-            Console.WriteLine(Environment.UserName);
-            Console.WriteLine("Domain:" + domainPath);
-            Console.WriteLine("Groups:" + userGroup.Path);
             bannerCount = bannerCount + 1;
             ClassifyUser(userGroup.Path, domainPath, bannerCount);
         }
