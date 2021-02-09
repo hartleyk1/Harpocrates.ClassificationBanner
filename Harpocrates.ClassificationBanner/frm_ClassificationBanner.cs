@@ -70,7 +70,7 @@ namespace Harpocrates.ClassificationBanner
             btnChange.Image = Image.FromFile(@"../../Images/level.png");
             btnAbout.Image = Image.FromFile(@"../../Images/help.png");
 
-            
+
         }
         #endregion
 
@@ -453,33 +453,49 @@ namespace Harpocrates.ClassificationBanner
                     // Display a dialog and request password to close out of Harpocrates
                     string promptValue = ShowPromptDialog("Password required to close Harpocrates.Banner.", "Exiting Harpocrates.Banner");
                     // Catch null to prevent Decryption from erroring out
-                    if (string.IsNullOrEmpty(promptValue))
+                    if (!string.IsNullOrEmpty(promptValue))
                     {
-                        promptValue = "000000000000000000000000000000000000000000000";
+                        // If decryption fails, catch the error and execute Hide. Prevent the app from crashing.
+                        try {
+                            string decString = Harpocrates.Decrypt(key.GetValue("Password").ToString(), promptValue);
+                            // If the password and role is a match, close out of Harpocrates
+                            if (decString == "HARPOCRATES" && key.GetValue("Role").ToString() == "Administrator")
+                            {
+                                key.Close();
+                                Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
+                                RegisterBar();      // De-registers the application bar
+                                closingFlag = 0;
+                                Application.Exit(); // Forces program to exit with code 0, does not create dispose error
+                            }
+                            else
+                            {
+                                // Passwords do not much and/or role is not Administrator, execute hide
+                                e.Cancel = true;        // Prevent form from closing
+                                key.Close();            // Close registry
+                                btnHide.PerformClick(); // Execute click event on Hide
+                            }
+                        } catch (Exception errorThrown)
+                        {
+                            Console.WriteLine("Generated Error:" + errorThrown);
+                            e.Cancel = true;        // Prevent form from closing
+                            key.Close();            // Close registry
+                            btnHide.PerformClick(); // Execute click event on Hide
+                        } 
                     }
-                    string decString = Harpocrates.Decrypt(key.GetValue("Password").ToString(), promptValue);
-                    // If the password and role is a match, close out of Harpocrates
-                    if(decString == "HARPOCRATES" && key.GetValue("Role").ToString() == "Administrator")
+                    else
                     {
-                        key.Close();
-                        Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
-                        RegisterBar();      // De-registers the application bar
-                        closingFlag = 0;
-                        Application.Exit(); // Forces program to exit with code 0, does not create dispose error
-                    } else
-                    {
-                        hidingFlag = 1;
-                        key.Close();
+                        // No password provided, execute hide
+                        e.Cancel = true;        // Prevent form from closing
+                        key.Close();            // Close registry
+                        btnHide.PerformClick(); // Execute click event on Hide
                     }
                 }
-            } else
+            }
+            else
             {
-                if(hidingFlag == 1)
-                {
-                    btnHide.PerformClick();
-                }
-                Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
-                RegisterBar();      // De-registers the application bar
+                // An error is occurring, execute hide
+                e.Cancel = true;        // Prevent form from closing
+                btnHide.PerformClick(); // Execute click event on Hide
             }
         }
 
@@ -493,7 +509,7 @@ namespace Harpocrates.ClassificationBanner
                 Text = caption,
                 StartPosition = FormStartPosition.CenterScreen
             };
-            Label textLabel = new Label() { Left = 50, Top = 20, Width=400, Text = text };
+            Label textLabel = new Label() { Left = 50, Top = 20, Width = 400, Text = text };
             TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70, DialogResult = DialogResult.OK };
             confirmation.Click += (sender, e) => { prompt.Close(); };
