@@ -18,11 +18,11 @@ namespace Harpocrates.ClassificationBanner
 {
     public static class Harpocrates
     {
-        // This constant is used to determine the keysize of the encryption algorithm in bits.
+        // Determine the keysize of the encryption algorithm in bits.
         // We divide this by 8 within the code below to get the equivalent number of bytes.
         private const int Keysize = 256;
 
-        // This constant determines the number of iterations for the password bytes generation function.
+        // Determines the number of iterations for the password bytes generation function.
         private const int DerivationIterations = 1000;
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace Harpocrates.ClassificationBanner
         /// Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
         /// so that the same Salt and IV values can be used when decrypting.
         /// </summary>
-        /// <param name="plainText"></param>
-        /// <param name="passPhrase"></param>
-        /// <returns></returns>
+        /// <param name="plainText">The plaintext password that will be located in the registry</param>
+        /// <param name="passPhrase">The key that will be located in the registry</param>
+        /// <returns>Returns the converted value</returns>
         public static string Encrypt(string plainText, string passPhrase)
         {
             var saltStringBytes = Generate256BitsOfRandomEntropy();
@@ -69,11 +69,13 @@ namespace Harpocrates.ClassificationBanner
         }
 
         /// <summary>
-        /// 
+        /// Decrypt the password within the registry via a
+        /// a user entered value and a registry value.
+        /// Decrypt can throw a padding/mismatch error if the user entered value is not exact.
         /// </summary>
-        /// <param name="cipherText"></param>
-        /// <param name="passPhrase"></param>
-        /// <returns></returns>
+        /// <param name="cipherText">Obtain the key from the registry</param>
+        /// <param name="passPhrase">Obtain the user entered password</param>
+        /// <returns>Returns the password in plaintext</returns>
         public static string Decrypt(string cipherText, string passPhrase)
         {
             // Get the complete stream of bytes that represent:
@@ -113,12 +115,12 @@ namespace Harpocrates.ClassificationBanner
         }
 
         /// <summary>
-        /// 
+        /// Generate 256 bits randomly
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns a 256-long bits</returns>
         private static byte[] Generate256BitsOfRandomEntropy()
         {
-            var randomBytes = new byte[32]; // 32 Bytes will give us 256 bits.
+            var randomBytes = new byte[32]; // 32 Bytes = 256 bits.
             using (var rngCsp = new RNGCryptoServiceProvider())
             {
                 // Fill the array with cryptographically secure random bytes.
