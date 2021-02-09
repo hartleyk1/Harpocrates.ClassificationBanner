@@ -1,7 +1,7 @@
 ﻿/***********************************************************************************
  * 
  * File Name:   Harpocrates
- * Modified:    2021-02-03
+ * Modified:    2021-02-09
  * Purpose:     Encrypt/decrypt a random string of bytes based on plaintext and passphrase.
  * 
  * *********************************************************************************/
@@ -112,7 +112,10 @@ namespace Harpocrates.ClassificationBanner
             }
         }
 
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private static byte[] Generate256BitsOfRandomEntropy()
         {
             var randomBytes = new byte[32]; // 32 Bytes will give us 256 bits.
