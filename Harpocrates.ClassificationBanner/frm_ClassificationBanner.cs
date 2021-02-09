@@ -2,7 +2,7 @@
  * 
  * Copyright:   Kellye Tolliver, tolliver.kellye@gmail.com
  * File Name:   frm_ClassificationBanner
- * Modified:    2021-02-02
+ * Modified:    2021-02-09
  * Purpose:     Set up defaults of the banner settings and then begin the loading
  *      and registration of the banner. Banner must be registered as an application
  *      bar for it to be able to take over the top portion of the user's screen.
@@ -23,6 +23,8 @@ namespace Harpocrates.ClassificationBanner
     public partial class frm_ClassificationBanner : Form
     {
         #region Constant Banner Variables
+        private string P = "#007a33";
+        private string P_TEXT = "PROTECTED";
         private string U = "#007a33";
         private string U_TEXT = "UNCLASSIFIED";
         private string ULES = "#007a33";
@@ -81,7 +83,7 @@ namespace Harpocrates.ClassificationBanner
         /// <param name="domainPath">Obtain the network domain that the user is a part of</param>
         private void ClassifyUser(string userGroup, string domainPath, int level)
         {
-            if (level > 0 && level < 7)
+            if (level > 0 && level < 8)
             {
                 switch (level)
                 {
@@ -144,6 +146,17 @@ namespace Harpocrates.ClassificationBanner
                         btnAbout.BackColor = ColorTranslator.FromHtml(TS);
                         lbl_Computer.BackColor = ColorTranslator.FromHtml(TS);
                         lbl_User.BackColor = ColorTranslator.FromHtml(TS);
+                        break;
+                    case 7:
+                        lbl_Classification.Text = P_TEXT;
+                        lbl_Classification.BackColor = ColorTranslator.FromHtml(P);
+                        btnClose.BackColor = ColorTranslator.FromHtml(P);
+                        btnHide.BackColor = ColorTranslator.FromHtml(P);
+                        btnChange.BackColor = ColorTranslator.FromHtml(P);
+                        btnAbout.BackColor = ColorTranslator.FromHtml(P);
+                        lbl_Computer.BackColor = ColorTranslator.FromHtml(P);
+                        lbl_User.BackColor = ColorTranslator.FromHtml(P);
+                        break;
                         break;
                 }
             }
