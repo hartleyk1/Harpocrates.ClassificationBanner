@@ -23,25 +23,37 @@ namespace Harpocrates.ClassificationBanner
     public partial class frm_ClassificationBanner : Form
     {
         #region Constant Banner Variables
+        // Protected design values
         private string P = "#007a33";
         private string P_TEXT = "PROTECTED";
+        // Unclassified design values
         private string U = "#007a33";
         private string U_TEXT = "UNCLASSIFIED";
         private string ULES = "#007a33";
         private string ULES_TEXT = "UNCLASSIFIED // LAW ENFORCEMENT SENSITIVE";
         private string UFUO = "#007a33";
         private string UFUO_TEXT = "UNCLASSIFIED // FOR OPERATIONAL USE ONLY";
+        // Confidential design values
         private string CON = "#0033A0";
         private string CON_TEXT = "CONFIDENTIAL";
+        // Classified  design values
         private string C = "#c1a7e2";
         private string C_TEXT = "CLASSIFIED";
+        // Secret design values
         private string S = "#C8102E";
         private string S_TEXT = "SECRET";
+        // Top Secret design values
         private string TS = "#FF671F";
         private string TS_TEXT = "TOP SECRET";
+        #endregion
+        #region Flag Variables
+        // Flag to determine if user is attempting to close out of application
         private int closingFlag = 0;
+        // Flag to determine if user is attempting to hide application
         private int hidingFlag = 0;
+        // Flag to determine user's role
         private string userRole;
+        // Flag to determine the level of classification depending on user role and clearance/level shuffle
         private int bannerCount = 0;
         #endregion
 
@@ -83,7 +95,27 @@ namespace Harpocrates.ClassificationBanner
         /// <param name="domainPath">Obtain the network domain that the user is a part of</param>
         private void ClassifyUser(string userGroup, string domainPath, int level)
         {
-            if (level > 0 && level < 8)
+            // Set up predefined user role
+            if (string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
+            {
+                userRole = "UNKNOWN";
+            }
+            else if (userGroup.Contains("OU=IT") || userGroup.Contains("OU=HR") || userGroup.Contains("OU=Secretary") || userGroup.Contains("OU=Administrator") || userGroup.Contains("OU=Administration"))
+            {
+                userRole = "Administrator";
+            }
+            else if (userGroup.Contains("OU=Investigator") || userGroup.Contains("OU=Investigations") || userGroup.Contains("OU=CID")
+                  || userGroup.Contains("OU=Patrol") || userGroup.Contains("OU=Officer") || userGroup.Contains("OU=Agent") || userGroup.Contains("OU=Employee")
+                  || userGroup.Contains("OU=Correction") || userGroup.Contains("OU=Jail"))
+            {
+                userRole = "Employee";
+            }
+            else
+            {
+                userRole = "Other";
+            }
+            // Allow clearance shuffle
+            if ((level > 0 && level < 8) && userRole != "UNKNOWN")
             {
                 switch (level)
                 {
@@ -108,14 +140,14 @@ namespace Harpocrates.ClassificationBanner
                         lbl_User.BackColor = ColorTranslator.FromHtml(UFUO);
                         break;
                     case 3:
-                        lbl_Classification.Text = CON_TEXT;
-                        lbl_Classification.BackColor = ColorTranslator.FromHtml(CON);
-                        btnClose.BackColor = ColorTranslator.FromHtml(CON);
-                        btnHide.BackColor = ColorTranslator.FromHtml(CON);
-                        btnChange.BackColor = ColorTranslator.FromHtml(CON);
-                        btnAbout.BackColor = ColorTranslator.FromHtml(CON);
-                        lbl_Computer.BackColor = ColorTranslator.FromHtml(CON);
-                        lbl_User.BackColor = ColorTranslator.FromHtml(CON);
+                            lbl_Classification.Text = CON_TEXT;
+                            lbl_Classification.BackColor = ColorTranslator.FromHtml(CON);
+                            btnClose.BackColor = ColorTranslator.FromHtml(CON);
+                            btnHide.BackColor = ColorTranslator.FromHtml(CON);
+                            btnChange.BackColor = ColorTranslator.FromHtml(CON);
+                            btnAbout.BackColor = ColorTranslator.FromHtml(CON);
+                            lbl_Computer.BackColor = ColorTranslator.FromHtml(CON);
+                            lbl_User.BackColor = ColorTranslator.FromHtml(CON);
                         break;
                     case 4:
                         lbl_Classification.Text = C_TEXT;
@@ -164,9 +196,8 @@ namespace Harpocrates.ClassificationBanner
             {
                 bannerCount = 0;
                 // Give UNCLASSIFIED if a group or domain does not exist
-                if (string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
+                if (userRole == "UKNOWN")
                 {
-                    userRole = "UNKNOWN";
                     lbl_Classification.Text = U_TEXT;                           // Sets default clearance text
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(U);
                     btnClose.BackColor = ColorTranslator.FromHtml(U);
@@ -176,9 +207,8 @@ namespace Harpocrates.ClassificationBanner
                     lbl_Computer.BackColor = ColorTranslator.FromHtml(U);
                     lbl_User.BackColor = ColorTranslator.FromHtml(U);
                 }
-                else if (userGroup.Contains("OU=IT") || userGroup.Contains("OU=HR") || userGroup.Contains("OU=Secretary") || userGroup.Contains("OU=Administrator"))
+                else if (userRole == "Administrator")
                 {
-                    userRole = "Administrator";
                     lbl_Classification.Text = C_TEXT;
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(C);
                     btnClose.BackColor = ColorTranslator.FromHtml(C);
@@ -187,10 +217,19 @@ namespace Harpocrates.ClassificationBanner
                     btnAbout.BackColor = ColorTranslator.FromHtml(C);
                     lbl_Computer.BackColor = ColorTranslator.FromHtml(C);
                     lbl_User.BackColor = ColorTranslator.FromHtml(C);
+                } else if (userRole == "Employee")
+                {
+                    lbl_Classification.Text = ULES_TEXT;
+                    lbl_Classification.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnClose.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnHide.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnChange.BackColor = ColorTranslator.FromHtml(ULES);
+                    btnAbout.BackColor = ColorTranslator.FromHtml(ULES);
+                    lbl_Computer.BackColor = ColorTranslator.FromHtml(ULES);
+                    lbl_User.BackColor = ColorTranslator.FromHtml(ULES);
                 }
                 else
                 {
-                    userRole = "TEST";
                     // Give UNCLASSIFIEDLES if nothing else applies
                     lbl_Classification.Text = ULES_TEXT;
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(ULES);
@@ -202,11 +241,12 @@ namespace Harpocrates.ClassificationBanner
                     lbl_User.BackColor = ColorTranslator.FromHtml(ULES);
                 }
             }
-            // Load registry and store values
+            // Load registry and store values, name the key HSCB
             RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\HSCB");
             string encString = Harpocrates.Encrypt("HARPOCRATES", "PASSWORD");
             key.SetValue("Role", userRole);
             key.SetValue("Password", encString);
+            key.SetValue("Creation", DateTime.Now.ToString());
             key.Close();
         }
         #endregion
