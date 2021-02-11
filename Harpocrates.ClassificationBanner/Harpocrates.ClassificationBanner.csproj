@@ -215,6 +215,8 @@
   <ItemGroup>
     <Content Include="Images\close.png" />
     <Content Include="Images\help.png" />
+    <Content Include="Images\hLogo.png" />
+    <Content Include="Images\hLogo2.png" />
     <Content Include="Images\level.png" />
     <Content Include="Images\logoTemplate.png" />
     <Content Include="Images\visible.png" />

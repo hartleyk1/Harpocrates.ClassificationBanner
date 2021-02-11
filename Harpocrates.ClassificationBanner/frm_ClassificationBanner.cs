@@ -2,7 +2,7 @@
  * 
  * Copyright:   Kellye Tolliver, tolliver.kellye@gmail.com
  * File Name:   frm_ClassificationBanner
- * Modified:    2021-02-09
+ * Modified:    2021-02-11
  * Purpose:     Set up defaults of the banner settings and then begin the loading
  *      and registration of the banner. Banner must be registered as an application
  *      bar for it to be able to take over the top portion of the user's screen.
@@ -99,10 +99,13 @@ namespace Harpocrates.ClassificationBanner
             if (string.IsNullOrEmpty(userGroup) || string.IsNullOrEmpty(domainPath))
             {
                 userRole = "UNKNOWN";
-            }
-            else if (userGroup.Contains("OU=IT") || userGroup.Contains("OU=HR") || userGroup.Contains("OU=Secretary") || userGroup.Contains("OU=Administrator") || userGroup.Contains("OU=Administration"))
+            } else if (userGroup.Contains("OU=IT"))
             {
                 userRole = "Administrator";
+            }
+            else if (userGroup.Contains("OU=HR") || userGroup.Contains("OU=Secretary") || userGroup.Contains("OU=Administrator") || userGroup.Contains("OU=Administration"))
+            {
+                userRole = "Supervisor";
             }
             else if (userGroup.Contains("OU=Investigator") || userGroup.Contains("OU=Investigations") || userGroup.Contains("OU=CID")
                   || userGroup.Contains("OU=Patrol") || userGroup.Contains("OU=Officer") || userGroup.Contains("OU=Agent") || userGroup.Contains("OU=Employee")
@@ -196,7 +199,7 @@ namespace Harpocrates.ClassificationBanner
             {
                 bannerCount = 0;
                 // Give UNCLASSIFIED if a group or domain does not exist
-                if (userRole == "UKNOWN")
+                if (userRole == "UKNOWN" || userRole == "Other")
                 {
                     lbl_Classification.Text = U_TEXT;                           // Sets default clearance text
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(U);
@@ -207,7 +210,7 @@ namespace Harpocrates.ClassificationBanner
                     lbl_Computer.BackColor = ColorTranslator.FromHtml(U);
                     lbl_User.BackColor = ColorTranslator.FromHtml(U);
                 }
-                else if (userRole == "Administrator")
+                else if (userRole == "Administrator" || userRole == "Supervisor")
                 {
                     lbl_Classification.Text = C_TEXT;
                     lbl_Classification.BackColor = ColorTranslator.FromHtml(C);
@@ -479,11 +482,29 @@ namespace Harpocrates.ClassificationBanner
 
         /// <summary>
         /// On close, de-register the banner by properly closing out of it
+        /// Prevent the application from preventing shutdowns, and prevent user from
+        /// ending application via Task Manager.
         /// if and only if the closingFlag has been set and the user has a proper role and password.
         /// Else, trigger a hide.
         /// </summary>
         private void frm_ClassificationBanner_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // If user is attempting to shut down computer
+            // or user is attempting to end the application in task manager
+            if(e.CloseReason == CloseReason.WindowsShutDown)
+            {
+                // bypass prompt
+                Application.OpenForms.OfType<frm_ClassificationBanner>().FirstOrDefault().Hide();
+                RegisterBar();      // De-registers the application bar
+                closingFlag = 0;
+                Application.Exit(); // Forces program to exit with code 0, does not create dispose error
+
+            }
+            else if (e.CloseReason == CloseReason.TaskManagerClosing)
+            {
+                // DO NOT bypass prompt. Set closing boolean to 1 and trigger the password prompt
+                closingFlag = 1;
+            }
             // If user is not hiding banner and making use of hide form...
             if (closingFlag == 1)
             {

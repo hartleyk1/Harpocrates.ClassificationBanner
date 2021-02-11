@@ -76,10 +76,5 @@ namespace Harpocrates.ClassificationBanner
             Application.OpenForms.OfType<frm_ClassificationBanner>().First().Hide(); // Hides form from being displayed, does not re-register
         }
         #endregion
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
